@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Player</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e6edf3;
+    }
+
+    .player-wrapper {
+      width: 100%;
+      max-width: 860px;
+      padding: 0 16px;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+    }
+
+    #videy-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    #play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    #play-overlay:hover { background: rgba(0,0,0,0.35); }
+
+    .play-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 2.5px solid rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, background 0.2s;
+    }
+    #play-overlay:hover .play-circle {
+      transform: scale(1.1);
+      background: rgba(255,255,255,0.28);
+    }
+
+    .triangle {
+      width: 0;
+      height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-left: 34px solid #fff;
+      margin-left: 6px;
+    }
+
+    .play-label {
+      margin-top: 18px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      letter-spacing: 0.05em;
+    }
+
+    #ads-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    #ads-overlay.show { display: flex; }
+
+    .ads-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 32px 36px;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+      animation: popIn 0.25s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    .ads-icon { font-size: 36px; margin-bottom: 12px; }
+    .ads-card h3 { font-size: 16px; font-weight: 600; color: #e6edf3; margin-bottom: 8px; }
+    .ads-card p { font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 22px; }
+
+    .btn-sponsor {
+      display: inline-block;
+      padding: 10px 28px;
+      background: #1f6feb;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-sponsor:hover { background: #388bfd; transform: translateY(-1px); }
+    .btn-sponsor:active { transform: scale(0.97); }
+
+    .countdown-text { margin-top: 14px; font-size: 12px; color: #6e7681; }
+    .countdown-text span { color: #58a6ff; font-weight: 600; }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: #21262d;
+      border-radius: 2px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: #1f6feb;
+      border-radius: 2px;
+      width: 100%;
+      transition: width 1s linear;
+    }
+  </style>
+</head>
+<body>
+
+<div class="player-wrapper">
+  <div class="video-container">
+
+    <iframe
+      id="videy-frame"
+      src=""
+      data-src="https://videy.co/v/?id=cTyxBrnb1"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+    ></iframe>
+
+    <div id="play-overlay" onclick="startPlayer()">
+      <div class="play-circle">
+        <div class="triangle"></div>
+      </div>
+      <span class="play-label">Putar Video</span>
+    </div>
+
+    <div id="ads-overlay">
+      <div class="ads-card">
+        <div class="ads-icon">⚡</div>
+        <h3>Sebentar ya...</h3>
+        <p>Video akan lanjut otomatis setelah kamu mengunjungi halaman sponsor kami. Ini hanya terjadi satu kali.</p>
+        <button class="btn-sponsor" onclick="goToAds()">Kunjungi Sponsor →</button>
+        <div class="countdown-text">
+          Lanjut otomatis dalam <span id="countdown">10</span> detik
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ⬇ GANTI 2 BARIS INI SAJA
+  var VIDEY_ID = 'cTyxBrnb1';       // contoh: AbCd1234
+  var ADS_URL  = 'https://omg10.com/4/11265278'; // URL redirect ads kamu
+
+  var ADS_DELAY    = 3000; // ads muncul setelah 3 detik
+  var SKIP_SECONDS = 10;   // countdown sebelum lanjut otomatis
+
+  var adsShown = false;
+  var countdownInterval = null;
+
+  function startPlayer() {
+    document.getElementById('videy-frame').src =
+      'https://videy.co/v?id=' + VIDEY_ID + '&autoplay=1';
+    document.getElementById('play-overlay').style.display = 'none';
+    if (!adsShown) setTimeout(showAds, ADS_DELAY);
+  }
+
+  function showAds() {
+    if (adsShown) return;
+    adsShown = true;
+    document.getElementById('videy-frame').src = '';
+    document.getElementById('ads-overlay').classList.add('show');
+
+    var left = SKIP_SECONDS;
+    document.getElementById('countdown').textContent = left;
+
+    var bar = document.getElementById('progress-bar');
+    bar.style.width = '100%';
+    setTimeout(function() {
+      bar.style.width = '0%';
+      bar.style.transition = 'width ' + SKIP_SECONDS + 's linear';
+    }, 50);
+
+    countdownInterval = setInterval(function() {
+      left--;
+      var el = document.getElementById('countdown');
+      if (el) el.textContent = left;
+      if (left <= 0) { clearInterval(countdownInterval); resumeVideo(); }
+    }, 1000);
+  }
+
+  function goToAds() {
+    window.open(ADS_URL, '_blank');
+    clearInterval(countdownInterval);
+    setTimeout(resumeVideo, 1200);
+  }
+
+  function resumeVideo() {
+    document.getElementById('ads-overlay').classList.remove('show');
+    document.getElementById('videy-frame').src =
+      'https://videy.co/v/?id=cTyxBrnb1' + VIDEY_ID + '&autoplay=1';
+  }
+</script>
+
+</body>
+</html>
