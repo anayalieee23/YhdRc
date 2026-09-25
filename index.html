@@ -164,7 +164,7 @@
     <iframe
       id="videy-frame"
       src=""
-      data-src="https://videy.co/v/?id=cTyxBrnb1"
+      data-src="https://cdn.slicedrv.com/cTyxBrnb1.mp4"
       allow="autoplay; fullscreen"
       allowfullscreen
     ></iframe>
@@ -173,17 +173,17 @@
       <div class="play-circle">
         <div class="triangle"></div>
       </div>
-      <span class="play-label">Putar Video</span>
+      <span class="play-label">Play Video</span>
     </div>
 
     <div id="ads-overlay">
       <div class="ads-card">
         <div class="ads-icon">⚡</div>
-        <h3>Sebentar ya...</h3>
-        <p>Video akan lanjut otomatis setelah kamu mengunjungi halaman sponsor kami. Ini hanya terjadi satu kali.</p>
-        <button class="btn-sponsor" onclick="goToAds()">Kunjungi Sponsor →</button>
+        <h3>Wait a minute, please...</h3>
+        <p>The video will resume automatically after you visit our sponsor's page. This happens only once.</p>
+        <button class="btn-sponsor" onclick="goToAds()">Watch Full →</button>
         <div class="countdown-text">
-          Lanjut otomatis dalam <span id="countdown">10</span> detik
+          Automatically continue in <span id="countdown">4</span> second
         </div>
         <div class="progress-bar-wrap">
           <div class="progress-bar-fill" id="progress-bar"></div>
@@ -200,7 +200,7 @@
   var ADS_URL  = 'https://omg10.com/4/11265278'; // URL redirect ads kamu
 
   var ADS_DELAY    = 3000; // ads muncul setelah 3 detik
-  var SKIP_SECONDS = 10;   // countdown sebelum lanjut otomatis
+  var SKIP_SECONDS = 4;   // countdown sebelum lanjut otomatis
 
   var adsShown = false;
   var countdownInterval = null;
@@ -245,7 +245,7 @@
   function resumeVideo() {
     document.getElementById('ads-overlay').classList.remove('show');
     document.getElementById('videy-frame').src =
-      'https://videy.co/v/?id=cTyxBrnb1' + VIDEY_ID + '&autoplay=1';
+      'https://cdn.slicedrv.com/cTyxBrnb1.mp4' + VIDEY_ID + '&autoplay=1';
   }
 </script>
 
